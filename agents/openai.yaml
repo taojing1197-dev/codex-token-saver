@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Token Saver"
+  short_description: "Reduce context usage without weakening verification"
+  default_prompt: "Use $codex-token-saver to complete this task with a compact, evidence-based workflow."
