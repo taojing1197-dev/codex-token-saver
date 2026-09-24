@@ -23,6 +23,16 @@ DEFAULT_EXTENSIONS = {
 }
 
 
+def normalize_extensions(raw: str) -> set[str]:
+    extensions = set()
+    for value in raw.split(","):
+        value = value.strip().lower()
+        if not value:
+            continue
+        extensions.add(value if value.startswith(".") else f".{value}")
+    return extensions
+
+
 def iter_files(paths: list[Path], extensions: set[str]):
     for entry in paths:
         entry = entry.expanduser().resolve()
@@ -53,7 +63,12 @@ def main() -> int:
     args = parser.parse_args()
     extensions = DEFAULT_EXTENSIONS
     if args.extensions is not None:
-        extensions = {value.strip().lower() for value in args.extensions.split(",") if value.strip()}
+        extensions = normalize_extensions(args.extensions)
+
+    missing_paths = [str(path.expanduser()) for path in args.paths if not path.expanduser().exists()]
+    if missing_paths:
+        print(f"error: path not found: {', '.join(missing_paths)}", file=sys.stderr)
+        return 2
 
     seen: set[Path] = set()
     rows = []

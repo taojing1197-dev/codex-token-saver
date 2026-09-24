@@ -11,6 +11,8 @@ python3 scripts/context_budget.py . --top 20
 python3 scripts/context_budget.py src docs --extensions .py,.ts,.md --max-tokens 30000
 ```
 
+Extension filters accept either `.py,.md` or `py,md`. Missing input paths fail clearly instead of producing a misleading zero-file report.
+
 The estimate uses one token per four bytes and is intentionally approximate. It does not inspect or upload file contents.
 
 ## Test

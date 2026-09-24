@@ -32,6 +32,24 @@ class ContextBudgetTests(unittest.TestCase):
             result = subprocess.run([sys.executable, str(SCRIPT), str(path), "--max-tokens", "10"], text=True, capture_output=True)
             self.assertEqual(result.returncode, 1)
 
+    def test_extensions_accept_values_without_dots(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "main.py").write_text("x" * 8, encoding="utf-8")
+            (root / "notes.md").write_text("y" * 8, encoding="utf-8")
+            result = subprocess.run([sys.executable, str(SCRIPT), str(root), "--extensions", "py", "--json"], text=True, capture_output=True)
+            report = json.loads(result.stdout)
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(report["files"], 1)
+            self.assertTrue(report["top"][0]["path"].endswith("main.py"))
+
+    def test_missing_path_is_an_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            missing = Path(directory) / "missing"
+            result = subprocess.run([sys.executable, str(SCRIPT), str(missing)], text=True, capture_output=True)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("path not found", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
