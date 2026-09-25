@@ -5,8 +5,11 @@ The helper estimates roughly one token per four bytes. This is intentionally app
 ```bash
 python3 scripts/context_budget.py . --top 20
 python3 scripts/context_budget.py src docs --extensions .py,.ts,.md --max-tokens 30000
+python3 scripts/context_budget.py docs --bytes-per-token 2.5
 python3 scripts/context_budget.py . --json
 ```
+
+Use a lower `--bytes-per-token` value for a more conservative estimate, especially for multilingual prose or minified code. The default is 4.
 
 Recommended sequence:
 

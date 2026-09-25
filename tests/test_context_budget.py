@@ -50,6 +50,16 @@ class ContextBudgetTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
             self.assertIn("path not found", result.stderr)
 
+    def test_custom_estimation_ratio(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "multilingual.txt"
+            path.write_bytes(b"x" * 12)
+            result = subprocess.run([sys.executable, str(SCRIPT), str(path), "--bytes-per-token", "2", "--json"], text=True, capture_output=True)
+            report = json.loads(result.stdout)
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(report["estimated_tokens"], 6)
+            self.assertEqual(report["bytes_per_token"], 2.0)
+
 
 if __name__ == "__main__":
     unittest.main()

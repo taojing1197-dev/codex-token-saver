@@ -59,8 +59,11 @@ def main() -> int:
     parser.add_argument("--extensions", help="comma-separated extensions such as .py,.md")
     parser.add_argument("--top", type=int, default=20)
     parser.add_argument("--max-tokens", type=int)
+    parser.add_argument("--bytes-per-token", type=float, default=4.0, help="estimation ratio; lower values are more conservative")
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
+    if args.bytes_per_token <= 0:
+        parser.error("--bytes-per-token must be greater than zero")
     extensions = DEFAULT_EXTENSIONS
     if args.extensions is not None:
         extensions = normalize_extensions(args.extensions)
@@ -80,7 +83,7 @@ def main() -> int:
             size = path.stat().st_size
         except OSError:
             continue
-        rows.append({"path": str(path), "bytes": size, "estimated_tokens": math.ceil(size / 4)})
+        rows.append({"path": str(path), "bytes": size, "estimated_tokens": math.ceil(size / args.bytes_per_token)})
     rows.sort(key=lambda item: (-item["estimated_tokens"], item["path"]))
     total_bytes = sum(item["bytes"] for item in rows)
     total_tokens = sum(item["estimated_tokens"] for item in rows)
@@ -89,7 +92,8 @@ def main() -> int:
         "bytes": total_bytes,
         "estimated_tokens": total_tokens,
         "top": rows[: max(args.top, 0)],
-        "estimate_note": "Approximation only: one token per four bytes.",
+        "bytes_per_token": args.bytes_per_token,
+        "estimate_note": f"Approximation only: one token per {args.bytes_per_token:g} bytes.",
     }
     if args.as_json:
         print(json.dumps(report, ensure_ascii=False, indent=2))
