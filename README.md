@@ -12,6 +12,7 @@ python3 scripts/context_budget.py src docs --extensions .py,.ts,.md --max-tokens
 ```
 
 Extension filters accept either `.py,.md` or `py,md`. Missing input paths fail clearly instead of producing a misleading zero-file report.
+Negative limits are rejected so configuration mistakes cannot masquerade as an exceeded budget.
 
 The default estimate uses one token per four bytes and is intentionally approximate. Use `--bytes-per-token 2.5` for a more conservative estimate on multilingual prose or minified code. The tool does not inspect or upload file contents.
 

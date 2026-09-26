@@ -62,6 +62,10 @@ def main() -> int:
     parser.add_argument("--bytes-per-token", type=float, default=4.0, help="estimation ratio; lower values are more conservative")
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
+    if args.top < 0:
+        parser.error("--top must be zero or greater")
+    if args.max_tokens is not None and args.max_tokens < 0:
+        parser.error("--max-tokens must be zero or greater")
     if args.bytes_per_token <= 0:
         parser.error("--bytes-per-token must be greater than zero")
     extensions = DEFAULT_EXTENSIONS
@@ -91,7 +95,7 @@ def main() -> int:
         "files": len(rows),
         "bytes": total_bytes,
         "estimated_tokens": total_tokens,
-        "top": rows[: max(args.top, 0)],
+        "top": rows[: args.top],
         "bytes_per_token": args.bytes_per_token,
         "estimate_note": f"Approximation only: one token per {args.bytes_per_token:g} bytes.",
     }

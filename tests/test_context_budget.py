@@ -60,6 +60,11 @@ class ContextBudgetTests(unittest.TestCase):
             self.assertEqual(report["estimated_tokens"], 6)
             self.assertEqual(report["bytes_per_token"], 2.0)
 
+    def test_negative_limits_are_rejected(self):
+        result = subprocess.run([sys.executable, str(SCRIPT), ".", "--max-tokens", "-1"], text=True, capture_output=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("--max-tokens must be zero or greater", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
