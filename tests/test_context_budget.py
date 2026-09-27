@@ -65,6 +65,15 @@ class ContextBudgetTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("--max-tokens must be zero or greater", result.stderr)
 
+    def test_non_finite_estimation_ratio_is_rejected(self):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), ".", "--bytes-per-token", "nan"],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("must be a finite number greater than zero", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

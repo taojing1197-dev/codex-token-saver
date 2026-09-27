@@ -66,8 +66,8 @@ def main() -> int:
         parser.error("--top must be zero or greater")
     if args.max_tokens is not None and args.max_tokens < 0:
         parser.error("--max-tokens must be zero or greater")
-    if args.bytes_per_token <= 0:
-        parser.error("--bytes-per-token must be greater than zero")
+    if not math.isfinite(args.bytes_per_token) or args.bytes_per_token <= 0:
+        parser.error("--bytes-per-token must be a finite number greater than zero")
     extensions = DEFAULT_EXTENSIONS
     if args.extensions is not None:
         extensions = normalize_extensions(args.extensions)

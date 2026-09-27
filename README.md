@@ -15,6 +15,7 @@ Extension filters accept either `.py,.md` or `py,md`. Missing input paths fail c
 Negative limits are rejected so configuration mistakes cannot masquerade as an exceeded budget.
 
 The default estimate uses one token per four bytes and is intentionally approximate. Use `--bytes-per-token 2.5` for a more conservative estimate on multilingual prose or minified code. The tool does not inspect or upload file contents.
+The estimation ratio must be a positive finite number; `NaN` and infinite values are rejected.
 
 ## Test
 
