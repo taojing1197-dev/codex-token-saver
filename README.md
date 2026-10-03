@@ -9,6 +9,7 @@ It encourages targeted discovery, selective reading, batched checks, output summ
 ```bash
 python3 scripts/context_budget.py . --top 20
 python3 scripts/context_budget.py src docs --extensions .py,.ts,.md --max-tokens 30000
+python3 scripts/context_budget.py . --exclude-dir generated-cache --exclude-dir vendor
 ```
 
 Extension filters accept either `.py,.md` or `py,md`. Missing input paths fail clearly instead of producing a misleading zero-file report.
@@ -16,6 +17,7 @@ Negative limits are rejected so configuration mistakes cannot masquerade as an e
 
 The default estimate uses one token per four bytes and is intentionally approximate. Use `--bytes-per-token 2.5` for a more conservative estimate on multilingual prose or minified code. The tool does not inspect or upload file contents.
 The estimation ratio must be a positive finite number; `NaN` and infinite values are rejected.
+Use repeatable `--exclude-dir` options for project-specific generated or vendor directory names without changing the built-in safe defaults.
 
 ## Test
 

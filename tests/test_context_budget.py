@@ -74,6 +74,23 @@ class ContextBudgetTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("must be a finite number greater than zero", result.stderr)
 
+    def test_custom_directory_exclusions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "main.py").write_text("x" * 8, encoding="utf-8")
+            generated = root / "generated-cache"
+            generated.mkdir()
+            (generated / "large.py").write_text("y" * 100, encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(root), "--exclude-dir", "generated-cache", "--json"],
+                text=True,
+                capture_output=True,
+            )
+            report = json.loads(result.stdout)
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(report["files"], 1)
+            self.assertTrue(report["top"][0]["path"].endswith("main.py"))
+
 
 if __name__ == "__main__":
     unittest.main()

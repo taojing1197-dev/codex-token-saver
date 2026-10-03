@@ -33,7 +33,7 @@ def normalize_extensions(raw: str) -> set[str]:
     return extensions
 
 
-def iter_files(paths: list[Path], extensions: set[str]):
+def iter_files(paths: list[Path], extensions: set[str], skip_dirs: set[str]):
     for entry in paths:
         entry = entry.expanduser().resolve()
         if entry.is_file():
@@ -43,7 +43,7 @@ def iter_files(paths: list[Path], extensions: set[str]):
         if not entry.is_dir():
             continue
         for root, dirs, files in os.walk(entry, followlinks=False):
-            dirs[:] = sorted(name for name in dirs if name not in SKIP_DIRS and not (Path(root) / name).is_symlink())
+            dirs[:] = sorted(name for name in dirs if name not in skip_dirs and not (Path(root) / name).is_symlink())
             for name in sorted(files):
                 path = Path(root) / name
                 if path.is_symlink():
@@ -60,6 +60,7 @@ def main() -> int:
     parser.add_argument("--top", type=int, default=20)
     parser.add_argument("--max-tokens", type=int)
     parser.add_argument("--bytes-per-token", type=float, default=4.0, help="estimation ratio; lower values are more conservative")
+    parser.add_argument("--exclude-dir", action="append", default=[], help="additional directory name to skip; repeat as needed")
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
     if args.top < 0:
@@ -68,6 +69,10 @@ def main() -> int:
         parser.error("--max-tokens must be zero or greater")
     if not math.isfinite(args.bytes_per_token) or args.bytes_per_token <= 0:
         parser.error("--bytes-per-token must be a finite number greater than zero")
+    custom_skip_dirs = {value.strip() for value in args.exclude_dir if value.strip()}
+    if any("/" in value or "\\" in value for value in custom_skip_dirs):
+        parser.error("--exclude-dir accepts directory names, not paths")
+    skip_dirs = SKIP_DIRS | custom_skip_dirs
     extensions = DEFAULT_EXTENSIONS
     if args.extensions is not None:
         extensions = normalize_extensions(args.extensions)
@@ -79,7 +84,7 @@ def main() -> int:
 
     seen: set[Path] = set()
     rows = []
-    for path in iter_files(args.paths, extensions):
+    for path in iter_files(args.paths, extensions, skip_dirs):
         if path in seen:
             continue
         seen.add(path)
