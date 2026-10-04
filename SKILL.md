@@ -11,7 +11,7 @@ Save tokens by avoiding irrelevant context, not by skipping necessary verificati
 
 1. Restate the concrete deliverable in one sentence.
 2. Search filenames and targeted symbols before reading files. Prefer `rg --files`, `rg -n`, Git status, and small schema summaries.
-3. Use `scripts/context_budget.py` to estimate the largest context contributors before opening broad directories. Read [references/budgeting.md](references/budgeting.md) when a numeric budget or a very large repository is involved.
+3. Use `scripts/context_budget.py` (or the installed `codex-context-budget` command) to estimate the largest context contributors before opening broad directories. Read [references/budgeting.md](references/budgeting.md) when a numeric budget or a very large repository is involved.
 4. Read matched slices, headers, schemas, and callers first. Expand only when an unanswered decision requires it.
 
 ## Reuse and batch

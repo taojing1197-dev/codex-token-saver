@@ -10,6 +10,11 @@ SCRIPT = Path(__file__).parents[1] / "scripts" / "context_budget.py"
 
 
 class ContextBudgetTests(unittest.TestCase):
+    def test_version_is_available_for_installed_cli(self):
+        result = subprocess.run([sys.executable, str(SCRIPT), "--version"], text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0)
+        self.assertRegex(result.stdout.strip(), r"context_budget\.py 0\.2\.0$")
+
     def test_skips_dependencies_and_counts_selected_extensions(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

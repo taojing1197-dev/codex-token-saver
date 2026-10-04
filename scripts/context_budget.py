@@ -11,6 +11,9 @@ import sys
 from pathlib import Path
 
 
+VERSION = "0.2.0"
+
+
 SKIP_DIRS = {
     ".git", ".hg", ".svn", ".next", ".nuxt", ".venv", "venv", "node_modules",
     "dist", "build", "coverage", "__pycache__", ".cache", ".pytest_cache",
@@ -55,6 +58,7 @@ def iter_files(paths: list[Path], extensions: set[str], skip_dirs: set[str]):
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
     parser.add_argument("paths", nargs="*", default=["."], type=Path)
     parser.add_argument("--extensions", help="comma-separated extensions such as .py,.md")
     parser.add_argument("--top", type=int, default=20)
